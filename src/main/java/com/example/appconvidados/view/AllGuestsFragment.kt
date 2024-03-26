@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appconvidados.databinding.FragmentAllGuestsBinding
 import com.example.appconvidados.view.adapter.GuestAdapter
+import com.example.appconvidados.view.listener.OnGuestListener
 import com.example.appconvidados.viewmodel.AllGuestsViewModel
 
 class AllGuestsFragment : Fragment() {
@@ -18,6 +19,7 @@ class AllGuestsFragment : Fragment() {
     private var _binding: FragmentAllGuestsBinding? = null
     private lateinit var viewModel: AllGuestsViewModel
     private val binding get() = _binding!!
+    private var guestAdapter: GuestAdapter = GuestAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,7 +34,21 @@ class AllGuestsFragment : Fragment() {
         binding.recycleAllGuests.layoutManager = LinearLayoutManager(context)
 
         // recycle adapter
-        binding.recycleAllGuests.adapter = GuestAdapter()
+        binding.recycleAllGuests.adapter = guestAdapter
+
+        val listener = object : OnGuestListener{
+            override fun onClick(id: Int) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDelete(id: Int) {
+                viewModel.remove(id)
+                viewModel.getAll()
+            }
+        }
+
+        // associa adapter ao listener para separar responsabilidades
+        guestAdapter.attachListener(listener)
 
         // view model
         viewModel.getAll()
@@ -49,7 +65,11 @@ class AllGuestsFragment : Fragment() {
 
     private fun observe(){
         viewModel.guests.observe(viewLifecycleOwner) {
-
+            guestAdapter.updateGuests(it)
         }
+    }
+
+    fun refreshGuestList() {
+        viewModel.getAll()
     }
 }
