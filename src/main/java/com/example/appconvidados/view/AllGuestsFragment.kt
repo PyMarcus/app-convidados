@@ -1,5 +1,6 @@
 package com.example.appconvidados.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +39,9 @@ class AllGuestsFragment : Fragment() {
 
         val listener = object : OnGuestListener{
             override fun onClick(id: Int) {
-                TODO("Not yet implemented")
+                val intent = Intent(context, GuestFormActivity::class.java)
+                intent.putExtra("guestid", id)
+                startActivity(intent)
             }
 
             override fun onDelete(id: Int) {
@@ -50,12 +53,17 @@ class AllGuestsFragment : Fragment() {
         // associa adapter ao listener para separar responsabilidades
         guestAdapter.attachListener(listener)
 
-        // view model
-        viewModel.getAll()
+
 
         observe()
 
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // view model atualiza ao voltar pra essa view
+        viewModel.getAll()
     }
 
     override fun onDestroyView() {

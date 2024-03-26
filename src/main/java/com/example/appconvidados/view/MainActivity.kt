@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
     private fun setUpNavigation(){
         binding.appBarMain.fab.setOnClickListener { view ->
             val intent = Intent(applicationContext, GuestFormActivity::class.java)
-            startActivityForResult(intent, 1001)
+            intent.putExtra("guestid", 0)
+            startActivity(intent)
         }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
@@ -54,16 +55,4 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1001 && resultCode == Activity.RESULT_OK) {
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main)
-            val fragment =
-                navHostFragment?.childFragmentManager?.fragments?.get(0)
-            if (fragment is AllGuestsFragment) {
-                fragment.refreshGuestList()
-            }
-        }
-    }
 }

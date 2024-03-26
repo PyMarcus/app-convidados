@@ -19,7 +19,7 @@ class GuestFormActivity : AppCompatActivity(), OnClickListener {
 
     private lateinit var binding: ActivityGuestFormBinding
     private lateinit var viewModel: GuestFormViewModel
-
+    private var guestId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,25 @@ class GuestFormActivity : AppCompatActivity(), OnClickListener {
         binding.radioYes.isChecked = true
         setContentView(binding.root)
 
+
+        viewModel.guest.observe(this){
+            if(it != null){
+                println("OKOKO "+ guestId)
+                if(guestId == -1) {
+                    binding.editName.setText(it.name)
+                    if (it.presence) {
+                        binding.radioYes.isChecked = true
+                    } else {
+                        binding.radioNot.isChecked = true
+                    }
+                }
+            }else{
+                guestId = 0
+            }
+        }
+
         setEventListener()
+        loadData()
     }
 
     override fun finish() {
@@ -52,8 +70,21 @@ class GuestFormActivity : AppCompatActivity(), OnClickListener {
         val name: String = binding.editName.text.toString()
         val present: Boolean = binding.radioYes.isChecked
 
-        viewModel.save(GuestModel(name, present))
-        setResult(Activity.RESULT_OK)
+        if(guestId == -1){
+            viewModel.update(viewModel.guest.value!!.id, name, present)
+        }else{
+            viewModel.save(GuestModel(name, present))
+        }
+        finish()
     }
+
+    private fun loadData(){
+        var i = intent.getIntExtra("guestid", -1)
+        guestId = -1
+        viewModel.getOne(i)
+    }
+
+
+
 
 }

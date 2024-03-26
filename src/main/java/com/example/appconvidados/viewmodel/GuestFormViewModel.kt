@@ -9,14 +9,24 @@ import com.example.appconvidados.repository.GuestRepository
 
 class GuestFormViewModel(application: Application): AndroidViewModel(application) {
     private var guestRepository: GuestRepository = GuestRepository(application.applicationContext)
-    private val listAllGuests = MutableLiveData<List<GuestModel>>()
-    var allGuests: LiveData<List<GuestModel>> = listAllGuests
+    private val getGuest = MutableLiveData<GuestModel>()
+    var guest: LiveData<GuestModel> = getGuest
 
     fun save(guest: GuestModel){
+        //if(guest.name != "")
         guestRepository.insert(guest)
     }
 
-    fun getAll() {
-        listAllGuests.value = guestRepository.getAll()
+    fun update(id: Int, name: String, present: Boolean){
+        val guest1 = guestRepository.get(id)
+        getGuest.value = guest1
+        guest1.name = name
+        guest1.presence = present
+        guestRepository.update(guest1)
+    }
+
+    fun getOne(id: Int){
+        val guest1 = guestRepository.get(id)
+        getGuest.value = guest1
     }
 }
